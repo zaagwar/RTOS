@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+from argparse import ArgumentParser
+from binascii import crc32
+from struct   import pack
+
+M : int = 0xFFFF_FFFF # Mask applied during CRC calculation
+
+def r(N : bytes, W : int = 32) -> int:
+    ''' Reverse bit order of n (e.g. 1100 -> 0011).
+        Return reversed bits as w-bit integer (32 by default). '''
+    return int("{:0{w}b}".format(N, w = W)[::-1], 2)
+
+if __name__ == '__main__':
+    # Get command-line arguments
+    parser = ArgumentParser()
+    parser.add_argument("infile", type = str)
+    parser.add_argument("outfile", type = str)
+    ARGS = parser.parse_args()
+
+    # Read data from input file
+    try:    IN_DATA : bytes = open(ARGS.infile, "rb").read()
+    except: exit(f"Unable to open input file: {ARGS.infile}")
+
+    # Verify that the image can fit in 256 bytes
+    if len(IN_DATA) > 252:
+        exit(f"Too much data to be padded: {len(IN_DATA)} bytes")
+
+    # Append appropriate number of null bytes
+    PADDING : int   = 252 - len(IN_DATA)
+    PADDED  : bytes = IN_DATA + bytes(PADDING)
+
+    # Append CRC32 value
+    CHECKSUM : int   = r((crc32(bytes(r(b, 8) for b in PADDED), 0) ^ M) & M)
+    IMAGE    : bytes = PADDED + pack("<L", CHECKSUM)
+
+    # Write image data to output file
+    try:
+        with open(ARGS.outfile, "wb") as OUTFILE:
+            for b in IMAGE:
+                OUTFILE.write(b.to_bytes())
+    except:
+        exit(f"Unable to open output file: {ARGS.outfile}");

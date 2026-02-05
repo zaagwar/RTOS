@@ -1,0 +1,17 @@
+#!/usr/bin/env python3
+
+import os
+
+if __name__ == '__main__':
+    # Display devices
+    print("Select device:")
+
+    lsblk : str = "lsblk -fs -I 8"
+    grep  : str = "grep -E 'sd.[[:digit:]]|RPI-RP[[:digit:]]*' --color=auto"
+    os.system(f'{lsblk} | {grep}')
+
+    # Mount selected device, upload UF2 file, then unmount
+    dev : str = input('RPI-RP2: /dev/')
+    os.system(f'sudo mount --mkdir /dev/{dev} /mnt/RPI_PICO')
+    os.system('sudo cp main.uf2 /mnt/RPI_PICO')
+    os.system('sudo umount /mnt/RPI_PICO')
