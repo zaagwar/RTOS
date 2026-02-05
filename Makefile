@@ -39,7 +39,7 @@ DBG-CFLAGS = \
 	-mcpu=cortex-m0plus -mthumb \
 	-ffreestanding -nostdlib -nolibc -fno-builtin
 
-LFLAGS = --no-warn-rwx-segments -nostdlib -marmelf -Tsource/ceres.ld
+LFLAGS = --no-warn-rwx-segments -nostdlib -marmelf -Tkernel/ceres.ld
 AFLAGS = --warn --fatal-warnings -mcpu=cortex-m0plus
 
 std: release-build clean install
@@ -63,7 +63,7 @@ release-build: build-bootloader
 	@printf " \x1b[1;92mdone\x1b[0m\n"
 
 	@printf "\tCreating UF2 image..."
-	@tools/elf2uf2 main.elf main.uf2
+	@tools/elf2uf2 main.elf -o main.uf2
 	@printf " \x1b[1;92mdone\x1b[0m\n"
 
 debug-build: build-bootloader
@@ -73,7 +73,7 @@ debug-build: build-bootloader
 	@printf " \x1b[1;92mdone\x1b[0m\n"
 
 	@printf "\tCreating UF2 image..."
-	@tools/elf2uf2 main.elf main.uf2
+	@tools/elf2uf2 main.elf -o main.uf2
 	@printf " \x1b[1;92mdone\x1b[0m\n"
 
 install:

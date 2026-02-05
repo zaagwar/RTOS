@@ -1,4 +1,4 @@
-ENTRY(start_kernel)
+ENTRY(Start_Kernel)
 
 MEMORY
 {
@@ -6,9 +6,9 @@ MEMORY
 	SRAM  (RWX) : ORIGIN = 0x20000000, LENGTH = 264K
 }
 
-REGION_ALIAS("BOOT_REGION", FLASH);
-REGION_ALIAS("TEXT_REGION", FLASH);
-REGION_ALIAS("DATA_REGION", FLASH);
+REGION_ALIAS("BOOT_LMA_REGION", FLASH);
+REGION_ALIAS("TEXT_LMA_REGION", FLASH);
+REGION_ALIAS("BSS_LMA_REGION",  FLASH);
 
 SECTIONS
 {
@@ -18,14 +18,14 @@ SECTIONS
 	 * the checksums match, the code is run by the CPU. Otherwise, the CPU halts
 	 * and nothing runs.
 	 */
-	.boot :
+	.Boot :
 	{
-		__boot_start = .;
+		__Boot_Start = .;
 	
 		KEEP(*(.boot))
 	
-		__boot_stop = .;
-	} > BOOT_REGION
+		__Boot_Stop = .;
+	} > BOOT_LMA_REGION
 
 	/* Before running any code in the boot section, the CPU will read the first
 	 * 252 bytes from flash and calculate its CRC-32 checksum. Then it will
@@ -36,31 +36,41 @@ SECTIONS
 	 * and that the final four bytes of this section contain the CRC-32 checksum
 	 * of the first 252 bytes.
 	 */
-	ASSERT(__boot_stop - __boot_start == 256, "Invalid .boot2 size")
+	ASSERT(__Boot_Stop - __Boot_Start == 256, "Invalid .boot2 size")
 
 	/* The text section contains all of the kernel's code. After the bootloader
 	 * in the boot section loads this section into RAM, it jumps to the very
-	 * beginning of this section, which should be the address of `Main_Core_0`.
+	 * beginning of this section, which should be the address of `Start_Kernel`.
 	 */
-	.text :
+	.Text :
 	{
-		__text_start = .;
+		__Text_Start = .;
 
-		*(.text. .text.start_kernel)
+		*(.text. .text.Start_Kernel)
 		KEEP(*(.text .text.*))
 		
-		__text_stop = .;
-	} > TEXT_REGION
+		__Text_Stop = .;
+	} > TEXT_LMA_REGION
 
-	.data :
+	.BSS ALIGN(4) :
 	{
-		__data_start = .;
+		__BSS_Start = .;
+
+		KEEP(*(.bss .bss.*))
+
+		__BSS_Stop = .;
+	} > BSS_LMA_REGION
+
+	. = 0x20010000;
+	.Data ALIGN(4) : AT(0x10000400)
+	{
+		__Data_Start = .;
 	
 		*(.data .data.*)
 		*(.rodata .rodata.*)
 	
-		__data_stop = .;
-	} > DATA_REGION
+		__Data_Stop = .;
+	}
 
 	/* The bootloader only loads 8 KiB (8192 B) of memory from flash to RAM.
 	 * As the amount of kernel code and data grows, I will surely exceed this
@@ -68,13 +78,15 @@ SECTIONS
 	 * into RAM, subtle bugs may appear that would be very tricky to spot, so
 	 * it is important to have this check in place.
 	 */
-	ASSERT(__data_stop - __text_start < 8192, "Image is too large")
+	ASSERT(__BSS_Stop - __Boot_Start < 8192, "Image is too large")
 }
 
 /* Export these symbols so they can be used in source code. */
-PROVIDE(__boot_start = __boot_start);
-PROVIDE(__boot_stop  = __boot_stop);
-PROVIDE(__text_start = __text_start);
-PROVIDE(__text_stop  = __text_stop);
-PROVIDE(__data_start = __data_start);
-PROVIDE(__data_stop  = __data_stop);
+PROVIDE(__Boot_Start = __Boot_Start);
+PROVIDE(__Boot_Stop  = __Boot_Stop);
+PROVIDE(__Text_Start = __Text_Start);
+PROVIDE(__Text_Stop  = __Text_Stop);
+PROVIDE(__Data_Start = __Data_Start);
+PROVIDE(__Data_Stop  = __Data_Stop);
+PROVIDE(__BSS_Start  = __BSS_Start);
+PROVIDE(__BSS_Stop   = __BSS_Stop);

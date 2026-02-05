@@ -225,4 +225,15 @@
 /* Completes in three clock cycles. */
 #define _ARMv6M_DSB __asm__ volatile ("dsb")
 
+/* Read the CPU ID Base Register to determine: the ID number of the processor
+ * core, the version number of the processor core, the implementation details of
+ * the processor core.
+ */
+uint32_t CPUID (void);
+
+/* Returns zero when read from processor core zero, and one when read from
+ * processor core one.
+ */
+bool Who_Am_I (void);
+
 #endif /* CORTEX_M0PLUS_COMMON_H */
