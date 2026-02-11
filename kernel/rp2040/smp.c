@@ -55,6 +55,3 @@ void Start_Other_Core
 	/* Update core tracker. */
 	Wr8(&Active_Cores, 0b0000'0011);
 }
-
-/* Trying to read/write to/from flash memory rather than ram */
-

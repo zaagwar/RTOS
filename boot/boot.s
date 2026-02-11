@@ -15,12 +15,33 @@ entry:
 	bl query
 	blx r0
 
-	;@ Load the first 8KiB of flash to the very bottom
-	;@ of physical memory and ignore the XIP cache.
 	ldrh r1, =0x3443 ;@ C4, `_memcpy44`
 	bl query
 
-	;@ Copy all code to the beginning of SRAM
+	;@ Load 4 KiB of data from flash to SRAM bank three
+	;@ and completely ignore the XIP cache.
+	mov r3, r0          ;@ preserve the returned function
+	ldr r0, =0x20010000 ;@ bottom of SRAM1
+	ldr r1, =0x13010000 ;@ bypass XIP cache completely
+	ldr r2, =0x1000     ;@ 4096 bytes (4 KiB)
+	blx r3
+
+	ldrh r1, =0x3443 ;@ C4, `_memcpy44`
+	bl query
+
+	;@ Load 4 KiB of static variables from flash to SRAM
+	;@ bank three and completely ignore the XIP cache.
+	mov r3, r0          ;@ preserve the returned function
+	ldr r0, =0x20030000 ;@ bottom of SRAM3
+	ldr r1, =0x13030000 ;@ bypass XIP cache completely
+	ldr r2, =0x1000     ;@ 4096 bytes (4 KiB)
+	blx r3
+
+	ldrh r1, =0x3443 ;@ C4, `_memcpy44`
+	bl query
+
+	;@ Load 8 KiB of code to the very bottom of physical
+	;@ memory and ignore the XIP cache.
 	mov r3, r0          ;@ preserve the returned function
 	ldr r0, =0x20000000 ;@ bottom of physical memory
 	ldr r1, =0x13000100 ;@ bypass XIP cache completely

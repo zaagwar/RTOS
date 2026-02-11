@@ -1,4 +1,4 @@
-ENTRY(Start_Kernel)
+ENTRY(Init)
 
 MEMORY
 {
@@ -40,29 +40,22 @@ SECTIONS
 
 	/* The text section contains all of the kernel's code. After the bootloader
 	 * in the boot section loads this section into RAM, it jumps to the very
-	 * beginning of this section, which should be the address of `Start_Kernel`.
+	 * beginning of this section, which should be the address of `Init`.
 	 */
-	.Text :
+	. = 0x20000100;
+	.Text : AT(0x10000100)
 	{
 		__Text_Start = .;
 
-		*(.text. .text.Start_Kernel)
+		*(.text. .text.Init)
 		KEEP(*(.text .text.*))
 		
 		__Text_Stop = .;
-	} > TEXT_LMA_REGION
-
-	.BSS ALIGN(4) :
-	{
-		__BSS_Start = .;
-
-		KEEP(*(.bss .bss.*))
-
-		__BSS_Stop = .;
-	} > BSS_LMA_REGION
+	}
+	ASSERT(__Text_Stop - __Text_Start < 8192, ".Text too small!")
 
 	. = 0x20010000;
-	.Data ALIGN(4) : AT(0x10000400)
+	.Data BLOCK(4) : AT(0x10010000)
 	{
 		__Data_Start = .;
 	
@@ -71,14 +64,18 @@ SECTIONS
 	
 		__Data_Stop = .;
 	}
+	ASSERT(__Data_Stop - __Data_Start < 4096, ".Data too small!")
 
-	/* The bootloader only loads 8 KiB (8192 B) of memory from flash to RAM.
-	 * As the amount of kernel code and data grows, I will surely exceed this
-	 * limit and be forced to increase this number. If too little data is moved
-	 * into RAM, subtle bugs may appear that would be very tricky to spot, so
-	 * it is important to have this check in place.
-	 */
-	ASSERT(__BSS_Stop - __Boot_Start < 8192, "Image is too large")
+	. = 0x20030000;
+	.BSS BLOCK(4) : AT(0x10030000)
+	{
+		__BSS_Start = .;
+
+		KEEP(*(.bss))
+
+		__BSS_Stop = .;
+	}
+	ASSERT(__BSS_Stop - __BSS_Start < 4096, ".BSS too small!")
 }
 
 /* Export these symbols so they can be used in source code. */
