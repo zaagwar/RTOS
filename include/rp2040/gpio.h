@@ -100,44 +100,40 @@ enum Port_Output_Enable : uint32_t
 };
 
 /* Set the function of a single port. */
-
-void RP2040_GPIO_Select_Port_Function
+void GPIO_Select_Port_Function
 (
 	enum Port Port,
 	enum Port_Function Which
 );
 
 /* Set the direction/output of one or more ports. */
-
-void RP2040_GPIO_Enable_Ports
+void GPIO_Enable_Ports
 (
 	enum Port_Bits Ports,
 	enum Port_Output_Enable Which
 );
 
-void RP2040_GPIO_Drive_Ports
+void GPIO_Drive_Ports
 (
 	enum Port_Bits Ports,
 	enum Port_Output Which
 );
 
 /* Set the direction/output of a single port. */
-
-void RP2040_GPIO_Enable_Port
+void GPIO_Enable_Port
 (
 	enum Port Port,
 	enum Port_Output_Enable Which
 );
 
-void RP2040_GPIO_Drive_Port
+void GPIO_Drive_Port
 (
 	enum Port Port,
 	enum Port_Output Which
 );
 
 /* Read the input/output value of a single port. */
-
-bool RP2040_GPIO_Read_Output (enum Port Port);
-bool RP2040_GPIO_Read_Input (enum Port Port);
+bool GPIO_Read_Output (enum Port Port);
+bool GPIO_Read_Input (enum Port Port);
 
 #endif /* RP2040_GPIO_H */

@@ -1,7 +1,7 @@
 #ifndef CORTEX_M0PLUS_MPU_H
 #define CORTEX_M0PLUS_MPU_H
 
-#include <cortex-m0plus/common.h>
+#include <rp2040/common.h>
 
 enum Access_Permission : uint8_t
 {
@@ -24,12 +24,13 @@ enum Region : uint8_t
 
 void Start_MPU (void);
 
+/* Region size = 2 ** `Region_Size` + 1 */
 bool MPU_Protect_Region
 (
 	const enum Region Region,
 	const uint32_t    Region_Start_Address,
 	const uint8_t     Region_Size,
-	const uint32_t    Region_Attributes,
+	const bool        Execute_Never,
 	const enum Access_Permission Privileged_Access_Permission,
 	const enum Access_Permission Unprivileged_Access_Permission
 );

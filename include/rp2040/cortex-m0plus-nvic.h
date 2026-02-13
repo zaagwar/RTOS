@@ -1,7 +1,7 @@
 #ifndef CORTEX_M0PLUS_NVIC_H
 #define CORTEX_M0PLUS_NVIC_H
 
-#include <cortex-m0plus/common.h>
+#include <rp2040/cortex-m0plus.h>
 
 extern __attribute__ (( aligned(256) )) void (*Primary_IVT[48])(void);
 extern __attribute__ (( aligned(256) )) void (*Secondary_IVT[48])(void);
@@ -46,6 +46,7 @@ enum Interrupt_Priority : uint8_t
 };
 
 void Set_Vector_Table (void (*Vector_Table[48])(void));
+void Set_ISR (void (**IVT)(void), enum IRQ_Bits IRQ, void (*ISR)(void));
 
 void Enable_Interrupt (enum IRQ_Bits IRQ_Bits);
 void Disable_Interrupt (enum IRQ_Bits IRQ_Bits);

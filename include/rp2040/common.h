@@ -2,7 +2,7 @@
 #define RP2040_COMMON_H
 
 #include <common.h>
-#include <cortex-m0plus/common.h>
+#include <rp2040/cortex-m0plus.h>
 
 #define Atomic_Clear 0x3000
 #define Atomic_Set   0x2000

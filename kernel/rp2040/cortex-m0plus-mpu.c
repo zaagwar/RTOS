@@ -1,14 +1,14 @@
-#include <cortex-m0plus/mpu.h>
+#include <rp2040/cortex-m0plus-mpu.h>
 
 void Start_MPU (void)
 {
 	const uint32_t r_MPU_Control = 0xE000'ED94;
 
 	/* Enable the MPU. */
-	Wr8(r_MPU_Control | Atomic_Set, 1);
+	Wr8(r_MPU_Control, 1);
 
 	/* Use the MPU when in HardFault and NMI handlers. */
-	Wr8(r_MPU_Control | Atomic_Set, 1 << 1);
+	Wr8(r_MPU_Control, 3);
 }
 
 bool MPU_Protect_Region
@@ -68,17 +68,17 @@ bool MPU_Protect_Region
 
 	else return false;
 
+	/* Specify the start address and region number of the memory to protect. */
+	const uint8_t Valid = 1 << 4;
+	Wr32(r_MPU_RBAR, (Region_Start_Address & 0xFFFF'FF00) | Valid | Region);
 
 	/* Enable the region with the given attributes and size. */
-	Wr32(r_MPU_RASR | Atomic_Clear, UINT32_MAX);
-	Wr32(r_MPU_RASR, (Region_Size << 1) | 1);
-	Wr32(r_MPU_RASR, (Execute_Never << 28) | (Access_Permissions << 24));
+	Wr32
+	(
+		r_MPU_RASR,
+		(Execute_Never << 28) | (Access_Permissions << 24)
+		| (Region_Size << 1) | 1
+	);
 
-	/* Specify the start address and region number of the memory to protect. */
-	Wr32(r_MPU_RBAR, (Region_Start_Address << 8) | Region);
-
-	/* Update the region number and base address. */
-	const uint8_t Valid = 1 << 4;
-	Wr8(r_MPU_RBAR, Valid);
-
+	return true;
 }

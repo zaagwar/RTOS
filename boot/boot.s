@@ -29,17 +29,6 @@ entry:
 	ldrh r1, =0x3443 ;@ C4, `_memcpy44`
 	bl query
 
-	;@ Load 4 KiB of static variables from flash to SRAM
-	;@ bank three and completely ignore the XIP cache.
-	mov r3, r0          ;@ preserve the returned function
-	ldr r0, =0x20030000 ;@ bottom of SRAM3
-	ldr r1, =0x13030000 ;@ bypass XIP cache completely
-	ldr r2, =0x1000     ;@ 4096 bytes (4 KiB)
-	blx r3
-
-	ldrh r1, =0x3443 ;@ C4, `_memcpy44`
-	bl query
-
 	;@ Load 8 KiB of code to the very bottom of physical
 	;@ memory and ignore the XIP cache.
 	mov r3, r0          ;@ preserve the returned function

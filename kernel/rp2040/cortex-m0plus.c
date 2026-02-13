@@ -1,6 +1,6 @@
-#include <cortex-m0plus/common.h>
-#include <cortex-m0plus/nvic.h>
-//#include <cortex-m0plus/mpu.h>
+#include <rp2040/cortex-m0plus.h>
+#include <rp2040/cortex-m0plus-nvic.h>
+#include <rp2040/cortex-m0plus-mpu.h>
 
 uint32_t CPUID (void)
 {

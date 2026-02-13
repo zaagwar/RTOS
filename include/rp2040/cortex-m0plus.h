@@ -1,7 +1,7 @@
-#ifndef CORTEX_M0PLUS_COMMON_H
-#define CORTEX_M0PLUS_COMMON_H
+#ifndef RP2040_CORTEX_M0_PLUS_H
+#define RP2040_CORTEX_M0_PLUS_H
 
-#include <common.h>
+#include <rp2040/common.h>
 
 /* The Supervisor Call instruction generates a call to a system supervisor.
  * When the exception is escalated, a HardFault exception is caused. Use it as a
@@ -236,4 +236,4 @@ uint32_t CPUID (void);
  */
 bool Who_Am_I (void);
 
-#endif /* CORTEX_M0PLUS_COMMON_H */
+#endif /* RP2040_CORTEX_M0_PLUS_H */

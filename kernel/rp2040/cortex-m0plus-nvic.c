@@ -1,4 +1,4 @@
-#include <cortex-m0plus/nvic.h>
+#include <rp2040/cortex-m0plus-nvic.h>
 
 __attribute__ (( aligned(256) )) void (*Primary_IVT[48])(void);
 __attribute__ (( aligned(256) )) void (*Secondary_IVT[48])(void);
@@ -56,6 +56,11 @@ void Set_Vector_Table (void (*Vector_Table[48])(void))
 {
 	const uint32_t r_VTOR = 0xE000'ED08;
 	Wr32(r_VTOR, (void*) Vector_Table);
+}
+
+void Set_ISR (void (**IVT)(void), enum IRQ_Bits IRQ, void (*ISR)(void))
+{
+	IVT[16 + IRQ] = ISR;
 }
 
 void Set_Interrupt_Priority (
